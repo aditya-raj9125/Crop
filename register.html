@@ -223,6 +223,27 @@
         // Import Firebase functions
         import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+        
+        // Test Firebase connection
+        function testFirebaseConnection() {
+            console.log('Testing Firebase connection on registration page...');
+            console.log('Auth object:', window.auth);
+            console.log('createUserWithEmailAndPassword:', createUserWithEmailAndPassword);
+            console.log('getFirestore:', getFirestore);
+            
+            if (window.auth && createUserWithEmailAndPassword && getFirestore) {
+                console.log('✅ Firebase is properly loaded on registration page');
+                return true;
+            } else {
+                console.log('❌ Firebase is not properly loaded on registration page');
+                return false;
+            }
+        }
+        
+        // Test Firebase connection when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(testFirebaseConnection, 1000); // Wait 1 second for Firebase to load
+        });
 
         // Form validation and Firebase registration
         document.getElementById('registerForm').addEventListener('submit', function(e) {
@@ -237,6 +258,12 @@
             // Basic validation
             if (!fullName || !email || !phone || !password || !confirmPassword) {
                 showError('Please fill in all required fields!');
+                return;
+            }
+            
+            // Check if Firebase is properly loaded
+            if (!window.auth || !createUserWithEmailAndPassword) {
+                showError('Firebase is not properly loaded. Please refresh the page and try again.');
                 return;
             }
             
@@ -315,6 +342,8 @@
                 })
                 .catch((error) => {
                     // Handle registration errors
+                    console.error('Registration error:', error); // Debug log
+                    
                     let errorMessage = 'Registration failed. Please try again.';
                     
                     switch(error.code) {
@@ -330,6 +359,14 @@
                         case 'auth/network-request-failed':
                             errorMessage = 'Network error. Please check your internet connection.';
                             break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many failed attempts. Please try again later.';
+                            break;
+                        default:
+                            errorMessage = `Registration failed: ${error.message}`;
                     }
                     
                     showError(errorMessage);
