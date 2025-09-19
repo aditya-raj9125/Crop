@@ -181,6 +181,10 @@
             <h1 class="register-title">Create Your Account</h1>
             <p class="register-subtitle">Join AgriPredict and start optimizing your crop yields today</p>
             
+            <div class="info-message" style="background: #e8f5e8; color: #2d5016; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #c3e6c3; font-size: 14px;">
+                <strong>Already have an account?</strong> <a href="agriculture.html" style="color: #2d5016; text-decoration: underline;">Click here to login</a>
+            </div>
+            
             <form id="registerForm">
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
@@ -355,7 +359,7 @@
                     
                     switch(error.code) {
                         case 'auth/email-already-in-use':
-                            errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+                            errorMessage = 'This email is already registered. Please use a different email or <a href="agriculture.html" style="color: #2d5016; text-decoration: underline;">click here to login</a>.';
                             break;
                         case 'auth/invalid-email':
                             errorMessage = 'Please enter a valid email address.';
@@ -423,7 +427,7 @@
                 margin: 10px 0;
                 border: 1px solid #fcc;
             `;
-            errorDiv.textContent = message;
+            errorDiv.innerHTML = message; // Use innerHTML to support HTML links
             
             // Insert before the form
             const form = document.getElementById('registerForm');
