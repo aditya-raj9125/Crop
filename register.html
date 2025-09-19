@@ -308,24 +308,23 @@
                     // Update user profile with display name
                     return updateProfile(user, {
                         displayName: fullName
+                    }).then(() => {
+                        // Initialize Firestore
+                        const db = getFirestore();
+                        
+                        // Store user data in Firestore
+                        const userData = {
+                            uid: user.uid,
+                            email: email,
+                            fullName: fullName,
+                            phone: phone,
+                            createdAt: new Date(),
+                            lastLogin: null
+                        };
+                        
+                        // Add user data to Firestore collection
+                        return addDoc(collection(db, 'users'), userData);
                     });
-                })
-                .then(() => {
-                    // Initialize Firestore
-                    const db = getFirestore();
-                    
-                    // Store user data in Firestore
-                    const userData = {
-                        uid: user.uid,
-                        email: email,
-                        fullName: fullName,
-                        phone: phone,
-                        createdAt: new Date(),
-                        lastLogin: null
-                    };
-                    
-                    // Add user data to Firestore collection
-                    return addDoc(collection(db, 'users'), userData);
                 })
                 .then((docRef) => {
                     console.log('User data saved to Firestore with ID:', docRef.id);
@@ -336,6 +335,14 @@
                     localStorage.setItem('userDocId', docRef.id);
                     
                     showSuccess('Registration successful! Redirecting to login...');
+                    setTimeout(() => {
+                        window.location.href = 'agriculture.html';
+                    }, 1500);
+                })
+                .catch((firestoreError) => {
+                    console.error('Firestore error:', firestoreError);
+                    // Even if Firestore fails, user is still created in Firebase Auth
+                    showSuccess('Account created successfully! Redirecting to login...');
                     setTimeout(() => {
                         window.location.href = 'agriculture.html';
                     }, 1500);
